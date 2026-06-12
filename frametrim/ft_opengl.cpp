@@ -46,7 +46,7 @@ namespace frametrim {
 
 OpenGLImpl::OpenGLImpl(bool keep_all_states, bool swaps_to_finish):
     FrameTrimmer(keep_all_states, swaps_to_finish),
-    m_fbo_ext(1)
+    m_fbo_ext()
 {
     registerStateCalls();
     registerLegacyCalls();
