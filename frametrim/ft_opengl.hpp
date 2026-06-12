@@ -50,14 +50,9 @@ enum ePerContext {
 };
 
 struct PerContextObjects {
-    PerContextObjects();
-
-    uint32_t m_id;
     VertexArrayMap m_vertex_arrays;
     ProgramPipelineObjectMap m_program_pipelines;
     FramebufferObjectMap m_fbo;
-
-    static uint32_t m_next_id;
 };
 
 class OpenGLImpl : public FrameTrimmer {
@@ -66,13 +61,11 @@ public:
 
     OpenGLImpl(bool keep_all_states, bool swaps_to_finish);
 
-    void switch_thread(int new_thread) override;
-
 protected:
-    void emitState() override;
-    void finalize() override;
-    ft_callback findCallback(const char *name) override;
-    bool skipDeleteObj(const trace::Call& call) override;
+    virtual void emitState();
+    virtual void finalize();
+    virtual ft_callback findCallback(const char *name);
+    virtual bool skipDeleteObj(const trace::Call& call);
 
 private:
     PTraceCall recordStateCall(const trace::Call& call, unsigned no_param_sel);
@@ -91,7 +84,6 @@ private:
 
     void recordRequiredCall(const trace::Call& call);
 
-    void update_context_id(uint32_t context_id);
     void updateCallTable(const std::vector<const char*>& names,
                            ft_callback cb);
 
@@ -138,9 +130,9 @@ private:
     void callOnObjectBoundTo(const trace::Call& call, ePerContext map_type, unsigned bindpoint);
     void fboBindAttachment(const trace::Call& call, DependecyObjectMap& dep_map, unsigned tex_id_param);
     void fboBindAttachmentEXT(const trace::Call& call, DependecyObjectMap& dep_map, unsigned tex_id_param);
-    void fboNamedBindAttachment(const trace::Call& call, DependecyObjectMap& dep_map, int obj_param_pos);
+    void fboNamedBindAttachment(const trace::Call& call, DependecyObjectMap& dep_map, int obj_param_pos); 
     void fboBlit(const trace::Call& call);
-    void fboBlitNamed(const trace::Call& call);
+    void fboBlitNamed(const trace::Call& call); 
     void fboReadBuffer(const trace::Call& call);
     void bindPerContext(const trace::Call& call, ePerContext map_type, unsigned bind_param);
 
@@ -175,8 +167,6 @@ private:
 
     std::map<std::string, PTraceCall> m_state_calls;
     std::map<unsigned, PTraceCall> m_enables;
-
-    std::unordered_map<unsigned, std::shared_ptr<PerContextObjects>> m_thread_active_context;
 };
 
 }
